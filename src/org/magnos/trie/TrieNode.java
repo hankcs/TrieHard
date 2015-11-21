@@ -20,6 +20,7 @@ import java.util.Map.Entry;
 
 
 /**
+ * 一个TrieNode就是一个{@link java.util.Map.Entry Entry}，储存了key、value、key的区间、孩子数量、父节点引用<br>
  * A TrieNode is an {@link java.util.Map.Entry Entry} in a Trie that stores the
  * sequence (key), value, the starting and ending indices into the sequence, the
  * number of children in this node, and the parent to this node.
@@ -63,30 +64,57 @@ import java.util.Map.Entry;
  */
 public class TrieNode<S, T> implements Entry<S, T>
 {
-
+   /**
+    * 父节点
+    */
    protected TrieNode<S, T> parent;
+   /**
+    * 值
+    */
    protected T value;
+   /**
+    * 序列
+    */
    protected S sequence;
+   /**
+    * 序列的起点
+    */
    protected int start;
+   /**
+    * 序列的终点
+    */
    protected int end;
+   /**
+    * 完美hash表
+    */
    protected PerfectHashMap<TrieNode<S, T>> children = null;
+   /**
+    * 大小？
+    */
    protected int size;
 
    /**
+    * 创建一个新的节点
     * Instantiates a new TrieNode.
     * 
     * @param parent
+    *        父节点<br>
     *        The parent to this node.
     * @param value
+    *        值<br>
     *        The value of this node.
     * @param sequence
+    *        序列<br>
     *        The sequence of this node.
     * @param start
+    *        本节点对应序列的起点，也是父节点对应序列的终点<br>
     *        The start of the sequence for this node, typically the end of the
     *        parent.
     * @param end
+    *        本节点对应序列的终点<br>
     *        The end of the sequence for this node.
     * @param children
+    *        初始子节点<br>
     *        The intial set of children.
     */
    protected TrieNode( TrieNode<S, T> parent, T value, S sequence, int start, int end, PerfectHashMap<TrieNode<S, T>> children )
@@ -101,17 +129,21 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 分割枝条，从指定位置开始，返回本节点对应的唯一子节点，该子节点继承了序列、值和孩子节点<br>
     * Splits this node at the given relative index and returns the TrieNode with
     * the sequence starting at index. The returned TrieNode has this node's
     * sequence, value, and children. The returned TrieNode is also the only
     * child of this node when this method returns.
     * 
     * @param index
+    *        绝对下标（从0开始到end - start - 1中的一个值）<br>
     *        The relative index (starting at 0 and going to end - start - 1) in
     *        the sequence.
     * @param newValue
+    *        新节点的值<br>
     *        The new value of this node.
     * @param sequencer
+    *
     *        The sequencer used to add the returned node to this node.
     * @return The reference to the child node created that's sequence starts at
     *         index.
@@ -214,6 +246,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 统计给定map中的非null节点<br>
     * Sums the sizes of all non-null TrieNodes in the given map.
     * 
     * @param nodes

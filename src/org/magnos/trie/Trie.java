@@ -25,6 +25,7 @@ import java.util.Set;
 
 
 /**
+ * 通用Trie树的实现<br>
  * An implementation of a compact Trie. <br/>
  * <br/>
  * <i>From Wikipedia:</i> <br/>
@@ -36,8 +37,10 @@ import java.util.Set;
  * @author Philip Diffenderfer
  * 
  * @param <S>
+ *        键类型<br>
  *        The sequence/key type.
  * @param <T>
+ *        值类型<br>
  *        The value type.
  */
 @SuppressWarnings ("unchecked" )
@@ -45,10 +48,14 @@ public class Trie<S, T> implements Map<S, T>
 {
 
    /**
+    * 返回空容器<br>
     * An empty collection/set to return.
     */
    private static final EmptyContainer<?> EMPTY_CONTAINER = new EmptyContainer<Object>();
 
+   /**
+    * 根节点
+    */
    private final TrieNode<S, T> root;
    private TrieSequencer<S> sequencer;
    private TrieMatch defaultMatch = TrieMatch.STARTS_WITH;
@@ -1065,6 +1072,10 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 空容器
+    * @param <T> 元素类型
+     */
    private static class EmptyContainer<T> extends AbstractCollection<T> implements Set<T>, Iterator<T>
    {
 
