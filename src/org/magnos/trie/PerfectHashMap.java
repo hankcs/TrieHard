@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 
 /**
+ * 完美哈希Map，键是整数，所以直接作为hash去查询<br>
  * A simple map implementation where the keys are integers and are used
  * as direct indices into the map. The minimum and maximum key values
  * define the size of the underlying table and thus should be as
@@ -28,6 +29,7 @@ import java.util.Arrays;
  * @author Philip Diffenderfer
  * 
  * @param <T>
+ *     值类型<br>
  *        The value type.
  */
 @SuppressWarnings ("unchecked" )
@@ -36,9 +38,13 @@ public class PerfectHashMap<T>
 
    private int min;
    private int size;
+   /**
+    * 值数组
+    */
    private T[] values;
 
    /**
+    * 初始化一个空白的哈希表<br>
     * Instantiates an Empty PerfectHashMap.
     */
    public PerfectHashMap()
@@ -47,11 +53,14 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 使用单个键值对初始化一个PerfectHashMap<br>
     * Instantiates a PerfectHashMap with a single entry.
     * 
     * @param firstKey
+    *        键<br>
     *        The key of the first entry.
     * @param firstValue
+    *        值<br>
     *        The value of the first entry.
     */
    public PerfectHashMap( int firstKey, T firstValue )
@@ -60,9 +69,11 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 查看键是否存在<br>
     * Determines whether a value exists in this map with the given key.
     * 
     * @param key
+    *        键<br>
     *        The key of the value to search for.
     * @return True if a non-null value exists for the given key.
     */
@@ -74,9 +85,11 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取键对应的值
     * Returns the value associated with the given key.
     * 
     * @param key
+    *        键<br>
     *        The key of the value to return.
     * @return The value associated with the key, or null if non exists.
     */
@@ -88,13 +101,15 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 放入键值对<br>
     * Puts the key and associated value in this map.
     * 
     * @param key
     *        The key to use that determines placement of the value.
     * @param value
     *        The value to add to the map.
-    * @return The previous value with the same key, or null if non existed.
+    * @return 键之前所对应的值<br>
+    * The previous value with the same key, or null if non existed.
     */
    public T put( int key, T value )
    {
@@ -137,9 +152,11 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 增大数组，前面是空白<br>
     * Adds a given number of spaces to the beginning of the underlying table.
     * 
     * @param spaces
+    *        空白的大小<br>
     *        The number of spaces to add to the beginning of the table.
     */
    private void prepend( int spaces )
@@ -152,9 +169,11 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 重设数组大小<br>
     * Resizes the underlying table to the given size.
     * 
     * @param size
+    *        新的大小<br>
     *        The new size of the table.
     */
    private void resize( int size )
@@ -163,6 +182,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 创建首个键值对并放入map<br>
     * Puts the first key/value entry into the map.
     * 
     * @param firstKey
@@ -179,6 +199,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 从map中删除所有键值对<br>
     * Removes all keys and values from the map.
     */
    public void clear()
@@ -189,11 +210,13 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 删除某个键<br>
     * Removes the value with the given key.
     * 
     * @param key
     *        The key of the value to remove.
     * @return
+    *         原来这个键是否存在<br>
     *         True if a value was found with the given key, otherwise false.
     */
    public boolean remove( int key )
@@ -256,6 +279,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 计算某个key对应的下标（根据min的相对位置）<br>
     * Calculates the relative index of a key based on the minimum key value in
     * the map.
     * 
@@ -270,6 +294,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取最小的key<br>
     * Returns the smallest key in the map.
     * 
     * @return The smallest key stored in this map.
@@ -280,6 +305,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取最大的key<br>
     * Returns the largest key in the map.
     * 
     * @return The largest key stored in this map.
@@ -290,6 +316,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 查看map是否非空<br>
     * Determines whether there are any entries in this map.
     * 
     * @return True if there are no key/values, otherwise false.
@@ -300,6 +327,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取map大小<br>
     * Returns the number of entries in this map.
     * 
     * @return The number of entries in this map.
@@ -310,6 +338,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取缓存区大小<br>
     * The capacity of the underlying table. This is equivalent to
     * {@link #getMax()} - {@link #getMin()} + 1.
     * 
@@ -321,6 +350,7 @@ public class PerfectHashMap<T>
    }
 
    /**
+    * 获取指定下标对应的值<br>
     * Returns the value at the given index.
     * 
     * @param index
