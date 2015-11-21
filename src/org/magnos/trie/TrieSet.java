@@ -22,6 +22,7 @@ import java.util.Set;
 
 
 /**
+ * 利用Trie树实现的Set
  * A {@link Set} where the underlying data structure is a Trie&lt;E,
  * Object&gt;. a TrieSet can be encoded into a minimized byte array and can be
  * decoded from an encoded byte array.
@@ -35,20 +36,26 @@ public class TrieSet<E> implements Set<E>
 {
 
    /**
+    * 用来标识一个value存在于本set中<br>
     * The flag used in the underlying Trie of a TrieSet to indicate the given
     * value exists in the TrieSet.
     */
    public static final Object FLAG = new Object();
 
    /**
+    * 用来标识一个value不存在于本set中<br>
     * The flag used in the underlying Trie of a TrieSet to indicate the given
     * value does not exist in the TrieSet.
     */
    public static final Object FLAG_NONE = null;
 
+   /**
+    * 内部实现
+    */
    protected Trie<E, Object> trie;
 
    /**
+    * 从一个trie构造set<br>
     * Instantiates a TrieSet given a trie. 
     * <h3>Example Usage</h3>
     * <pre>
@@ -66,6 +73,7 @@ public class TrieSet<E> implements Set<E>
    }
 
    /**
+    * 获取内部trie<br>
     * Returns the reference to the underlying Trie. The reference to the
     * underlying Trie may change if the {@link #retainAll(Collection)} method is
     * called after the reference is gotten.

@@ -89,7 +89,7 @@ public class TrieNode<S, T> implements Entry<S, T>
     */
    protected PerfectHashMap<TrieNode<S, T>> children = null;
    /**
-    * 大小？
+    * 所有子节点（子树）非空值（包含本节点的值）
     */
    protected int size;
 
@@ -129,7 +129,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
-    * 分割枝条，从指定位置开始，返回本节点对应的唯一子节点，该子节点继承了序列、值和孩子节点<br>
+    * 分割枝条，从指定位置开始，返回本节点对应的唯一子节点，该子节点继承了序列、值和孩子节点，但起点从index开始<br>
     * Splits this node at the given relative index and returns the TrieNode with
     * the sequence starting at index. The returned TrieNode has this node's
     * sequence, value, and children. The returned TrieNode is also the only
@@ -143,9 +143,10 @@ public class TrieNode<S, T> implements Entry<S, T>
     *        新节点的值<br>
     *        The new value of this node.
     * @param sequencer
-    *
+    *        序列处理器，用来计算hash值并放入map里面<br>
     *        The sequencer used to add the returned node to this node.
-    * @return The reference to the child node created that's sequence starts at
+    * @return 指向孩子节点的引用<br>
+    *         The reference to the child node created that's sequence starts at
     *         index.
     * 
     */
@@ -165,13 +166,17 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 将指定节点添加为子节点，子节点必须已经设置父节点为本节点，这样做是为了保证size
+    * 正确<br>
     * Adds the given child to this TrieNode. The child TrieNode is expected to
     * have had this node's reference passed to it's constructor as the parent
     * parameter. This needs to be done to keep the size calculations accurate.
     * 
     * @param child
+    *        子节点<br>
     *        The TrieNode to add as a child.
     * @param sequencer
+    *        hash计算工具<br>
     *        The sequencer to use to determine the place of the node in the
     *        children PerfectHashMap.
     */
@@ -190,26 +195,28 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 将此节点从父节点中删除，并且恰当地调整父子节点<br>
     * Removes this node from the Trie and appropriately adjusts it's parent and
     * children.
     * 
     * @param sequencer
+    *        哈希计算工具<br>
     *        The sequencer to use to determine the place of this node in this
     *        nodes sibling PerfectHashMap.
     */
    protected void remove( TrieSequencer<S> sequencer )
    {
-      // Decrement size if this node had a value
+      // 减小size。Decrement size if this node had a value
       setValue( null );
 
       int childCount = (children == null ? 0 : children.size());
 
-      // When there are no children, remove this node from it's parent.
+      // 当该节点没有子节点的时候，将该节点从它的父节点删除。When there are no children, remove this node from it's parent.
       if (childCount == 0)
       {
          parent.children.remove( sequencer.hashOf( sequence, start ) );
       }
-      // With one child, become the child!
+      // 当该节点只有一个子节点的时候，自己变成子节点。With one child, become the child!
       else if (childCount == 1)
       {
          TrieNode<S, T> child = children.valueAt( 0 );
@@ -229,9 +236,11 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 增加size，同时增加父节点的size<br>
     * Adds the given size to this TrieNode and it's parents.
     * 
     * @param amount
+    *        增加量<br>
     *        The amount of size to add.
     */
    private void addSize( int amount )
@@ -274,6 +283,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 确保所有子节点的父节点都指向本节点<br>
     * Ensures all child TrieNodes to this node are pointing to the correct
     * parent (this).
     */
@@ -294,6 +304,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 查看本节点是否有子节点<br>
     * Returns whether this TrieNode has children.
     * 
     * @return True if children exist, otherwise false.
@@ -304,6 +315,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 返回父节点<br>
     * Returns the parent of this TrieNode. If this TrieNode doesn't have a
     * parent it signals that this TrieNode is the root of a Trie and null will
     * be returned.
@@ -317,6 +329,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 返回值<br>
     * The value of this TrieNode.
     * 
     * @return The value of this TrieNode or null if this TrieNode is a branching
@@ -330,6 +343,8 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 返回完整序列，不过真实的到此节点的序列是从{@link #getStart()}开始到
+    * {@link #getEnd()}终止的<br>
     * The complete sequence of this TrieNode. The actual sequence
     * is a sub-sequence that starts at {@link #getStart()} (inclusive) and ends
     * at {@link #getEnd()} (exclusive).
@@ -342,6 +357,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 获取序列的起点<br>
     * The start of the sequence in this TrieNode.
     * 
     * @return The start of the sequence in this TrieNode, greater than or equal
@@ -354,6 +370,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 获取序列的终点<br>
     * The end of the sequence in this TrieNode.
     * 
     * @return The end of the sequence in this TrieNode, greater than
@@ -366,6 +383,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 返回所有子节点非空值（包含本节点的值）<br>
     * Returns the number of non-null values that exist in ALL child nodes
     * (including this node's value).
     * 
@@ -377,6 +395,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 子节点数量<br>
     * Returns the number of direct children.
     * 
     * @return The number of direct children in this node.
@@ -387,6 +406,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 返回根节点<br>
     * Calculates the root node by traversing through all parents until it found
     * it.
     * 
@@ -405,6 +425,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 本节点是否是根节点<br>
     * @return True if this node is a root, otherwise false.
     */
    public boolean isRoot()
@@ -413,6 +434,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 本节点是否是根节点或枝节点<br>
     * @return True if this node is a root or a naked (branch only) node,
     *         otherwise false.
     */
@@ -422,6 +444,7 @@ public class TrieNode<S, T> implements Entry<S, T>
    }
 
    /**
+    * 本节点是否有value<br>
     * @return True if this node has a non-null value (is not a root or naked
     *         node).
     */

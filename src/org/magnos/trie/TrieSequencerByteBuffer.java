@@ -19,6 +19,7 @@ package org.magnos.trie;
 import java.nio.ByteBuffer;
 
 /**
+ * ByteBuffer hash计算器<br>
  * A {@link TrieSequencer} implementation where ByteBuffer is the sequence type.
  * 
  * @author Philip Diffenderfer

@@ -17,6 +17,7 @@
 package org.magnos.trie;
 
 /**
+ * 匹配逻辑<br>
  * The matching logic used for retrieving values from a Trie or for
  * determining the existence of values given an input/key sequence.
  * 
@@ -27,6 +28,7 @@ public enum TrieMatch
 {
 
    /**
+    * 匹配序列的所有子序列（输入）<br>
     * A PARTIAL match only requires the input sequence to be a subset of the
     * sequences stored in the Trie. If the sequence "meow" is stored in the
     * Trie, then it can partially match on "m", "me", "meo", "meow", "meowa",
@@ -35,6 +37,7 @@ public enum TrieMatch
    PARTIAL,
 
    /**
+    * 精确匹配<br>
     * An EXACT match requires the input sequence to be an exact match to the
     * sequences stored in the Trie. If the sequence "meow" is stored in the
     * Trie, then it can only match on "meow".
@@ -42,6 +45,7 @@ public enum TrieMatch
    EXACT,
 
    /**
+    * 匹配以序列开头的输入序列<br>
     * A START_WITH match requires the input sequence to be a superset of the
     * sequences stored in the Trie. If the sequence "meow" is stored in the
     * Trie, then it can match on "meow", "meowa", "meowab", etc.

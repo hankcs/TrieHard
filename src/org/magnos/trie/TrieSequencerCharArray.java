@@ -20,6 +20,7 @@ package org.magnos.trie;
 
 
 /**
+ * char 数组hash计算器<br>
  * A {@link TrieSequencer} implementation where char[] is the sequence type.
  * This implementation is case-sensitive.
  * 

@@ -20,6 +20,7 @@ package org.magnos.trie;
 
 
 /**
+ * byte数组hash计算器<br>
  * A {@link TrieSequencer} implementation where byte[] is the sequence type.
  * 
  * @author Philip Diffenderfer

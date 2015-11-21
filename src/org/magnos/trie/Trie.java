@@ -57,12 +57,29 @@ public class Trie<S, T> implements Map<S, T>
     * 根节点
     */
    private final TrieNode<S, T> root;
+   /**
+    * hash计算器
+    */
    private TrieSequencer<S> sequencer;
+   /**
+    * 默认匹配逻辑
+    */
    private TrieMatch defaultMatch = TrieMatch.STARTS_WITH;
-
+   /**
+    * 序列集合
+    */
    private SequenceSet sequences;
+   /**
+    * 值集合
+    */
    private ValueCollection values;
+   /**
+    * 键值对集合
+    */
    private EntrySet entries;
+   /**
+    * 节点集合
+    */
    private NodeSet nodes;
 
    /**
@@ -77,11 +94,14 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 创建一个Trie树<br>
     * Instantiates a new Trie.
     * 
     * @param sequencer
+    *        hash计算器<br>
     *        The TrieSequencer which handles the necessary sequence operations.
     * @param defaultValue
+    *        匹配失败时的返回值<br>
     *        The default value of the Trie is the value returned when
     *        {@link #get(Object)} or {@link #get(Object, TrieMatch)} is called
     *        and no match was found.
@@ -97,6 +117,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 设置匹配失败时的返回值<br>
     * Sets the default value of the Trie, which is the value returned when a
     * query is unsuccessful.
     * 
@@ -111,6 +132,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 拷贝一个空的trie树<br>
     * Returns a Trie with the same default value, match, and
     * {@link TrieSequencer} as this Trie.
     * 
@@ -124,13 +146,17 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * put操作<br>
     * Puts the value in the Trie with the given sequence.
     * 
     * @param query
+    *        序列<br>
     *        The sequence.
     * @param value
+    *        值<br>
     *        The value to place in the Trie.
     * @return
+    *         原来的值<br>
     *         The previous value in the Trie with the same sequence if one
     *         existed, otherwise null.
     */
@@ -146,10 +172,10 @@ public class Trie<S, T> implements Map<S, T>
       int queryOffset = 0;
       TrieNode<S, T> node = root.children.get( sequencer.hashOf( query, 0 ) );
 
-      // The root doesn't have a child that starts with the given sequence...
+      // 根节点没有该路径直达的子节点。The root doesn't have a child that starts with the given sequence...
       if (node == null)
       {
-         // Add the sequence and value directly to root!
+         // 创建该路径，直接连到根节点上。Add the sequence and value directly to root!
          return putReturnNull( root, value, query, queryOffset, queryLength );
       }
 
@@ -162,46 +188,46 @@ public class Trie<S, T> implements Map<S, T>
 
          queryOffset += matches;
 
-         // mismatch in current node
+         // 当前节点不是完全匹配的，且路径还没走完。mismatch in current node
          if (matches != max)
          {
-            node.split( matches, null, sequencer );
+            node.split( matches, null, sequencer );   // 枝条分割，创建一个分岔节点
 
-            return putReturnNull( node, value, query, queryOffset, queryLength );
+            return putReturnNull( node, value, query, queryOffset, queryLength );   // 添加叶节点
          }
 
-         // partial match to the current node
+         // 当前节点不是完全匹配的，且路径走完了。partial match to the current node
          if (max < nodeLength)
          {
-            node.split( max, value, sequencer );
+            node.split( max, value, sequencer );   // 枝条分割，创建一个叶节点
             node.sequence = query;
 
             return null;
          }
 
-         // Full match to query, replace value and sequence
+         // 当前节点是完全匹配的，且路径走完了，那么替换value和序列。Full match to query, replace value and sequence
          if (queryOffset == queryLength)
          {
-            node.sequence = query;
+            node.sequence = query;  // 这句看起来有点多余，可能是为了减小序列长度，优化内存而设的
 
             return node.setValue( value );
          }
 
-         // full match, end of the query or node
+         // 当前节点是完全匹配的，且路径还没走完，且没有子节点，那么新建叶子节点。full match, end of the query or node
          if (node.children == null)
          {
             return putReturnNull( node, value, query, queryOffset, queryLength );
          }
 
-         // full match, end of node
+         // 当前节点是完全匹配的，且路径还没走完，且有子节点，那么看情况。full match, end of node
          TrieNode<S, T> next = node.children.get( sequencer.hashOf( query, queryOffset ) );
 
-         if (next == null)
+         if (next == null) // 没有对应的话就新建
          {
             return putReturnNull( node, value, query, queryOffset, queryLength );
          }
 
-         // full match, query or node remaining
+         // 否则继续往下走。full match, query or node remaining
          node = next;
       }
 
@@ -209,18 +235,24 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 创建一个从给定节点出发，通过给定路径到达的子节点<br>
     * Adds a new TrieNode to the given node with the given sequence subset.
     * 
     * @param node
+    *        父节点<br>
     *        The node to add to; the parent of the created node.
     * @param value
+    *        新子节点的值<br>
     *        The value of the node.
     * @param query
+    *        路径<br>
     *        The sequence that was put.
     * @param queryOffset
+    *        路径的开始<br>
     *        The offset into that sequence where the node (subset sequence)
     *        should begin.
     * @param queryLength
+    *        完整路径的长度<br>
     *        The length of the subset sequence in elements.
     * @return null
     */
@@ -232,11 +264,14 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取指定序列对应的值<br>
     * Gets the value that matches the given sequence.
     * 
     * @param sequence
+    *        指定序列<br>
     *        The sequence to match.
     * @param match
+    *        匹配逻辑<br>
     *        The matching logic to use.
     * @return The value for the given sequence, or the default value of the Trie
     *         if no match was found. The default value of a Trie is by default
@@ -250,6 +285,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取值，使用默认匹配逻辑<br>
     * Gets the value that matches the given sequence using the default
     * TrieMatch.
     * 
@@ -266,6 +302,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 查看是否有这个序列作为key<br>
     * Determines whether a value exists for the given sequence.
     * 
     * @param sequence
@@ -280,6 +317,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 查看是否有这个序列作为key<br>
     * Determines whether a value exists for the given sequence using the default
     * TrieMatch.
     * 
@@ -294,6 +332,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 从某个节点之后是否能匹配一个序列<br>
     * Starts at the root node and searches for a node with the given sequence
     * based on the given matching logic.
     * 
@@ -312,6 +351,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 删除一个序列<br>
     * Removes the sequence from the Trie and returns it's value. The sequence
     * must be an exact match, otherwise nothing will be removed.
     * 
@@ -326,6 +366,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 从某个节点之后删除一个序列<br>
     * Starts at the root node and searches for a node with the exact given
     * sequence, once found it
     * removes it and returns the value. If a node is not found with the exact
@@ -354,6 +395,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 返回树大小<br>
     * Returns the number of sequences-value pairs in this Trie.
     * 
     * @return The number of sequences-value pairs in this Trie.
@@ -364,6 +406,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 是否为空<br>
     * Determines whether this Trie is empty.
     * 
     * @return 0 if the Trie doesn't have any sequences-value pairs, otherwise
@@ -375,6 +418,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取默认匹配逻辑<br>
     * Returns the default TrieMatch used for {@link #has(Object)} and
     * {@link #get(Object)}.
     * 
@@ -386,6 +430,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 设置默认匹配逻辑<br>
     * Sets the default TrieMatch used for {@link #has(Object)} and
     * {@link #get(Object)}.
     * 
@@ -426,6 +471,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取键值对<br>
     * Returns a {@link Set} of {@link Entry}s that match the given sequence
     * based on the default matching logic. If no matches were found then a
     * Set with size 0 will be returned. The set returned can have Entries
@@ -441,6 +487,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取键值对<br>
     * Returns a {@link Set} of {@link Entry}s that match the given sequence
     * based on the given matching logic. If no matches were found then a
     * Set with size 0 will be returned. The set returned can have Entries
@@ -460,6 +507,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 所有节点<br>
     * The same as {@link #entrySet()} except instead of a {@link Set} of
     * {@link Entry}s, it's a {@link Set} of {@link TrieNode}s.
     * 
@@ -472,6 +520,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 匹配某个序列得到的所有节点<br>
     * Returns a {@link Set} of {@link TrieNode}s that match the given sequence
     * based on the default matching logic. If no matches were found then a Set
     * with size 0 will be returned. The set returned can have TrieNodes removed
@@ -489,6 +538,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 匹配某个序列得到的所有节点<br>
     * Returns a {@link Set} of {@link TrieNode}s that match the given sequence
     * based on the given matching logic. If no matches were found then a Set
     * with size 0 will be returned. The set returned can have TrieNodes removed
@@ -509,6 +559,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取所有节点，包含枝桠节点<br>
     * Returns an {@link Iterable} of all {@link TrieNode}s in this Trie
     * including naked (null-value) nodes.
     * 
@@ -520,6 +571,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取匹配一段序列的所有节点，包含枝桠节点<br>
     * Returns an {@link Iterable} of all {@link TrieNode}s in this Trie that
     * match the given sequence using the default matching logic including naked
     * (null-value) nodes.
@@ -535,6 +587,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取匹配一段序列的所有节点，包含枝桠节点<br>
     * Returns an {@link Iterable} of all {@link TrieNode}s in this Trie that
     * match the given sequence using the given matching logic including naked
     * (null-value) nodes.
@@ -559,6 +612,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取匹配一段序列的所有键<br>
     * Returns a {@link Set} of all keys (sequences) in this Trie that match the
     * given sequence given the default matching logic. If no matches were found
     * then a Set with size 0 will be returned. The Set returned can have
@@ -575,6 +629,7 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 获取匹配一段序列的所有键<br>
     * Returns a {@link Set} of all keys (sequences) in this Trie that match the
     * given sequence with the given matching logic. If no matches were found
     * then a Set with size 0 will be returned. The Set returned can have
@@ -600,11 +655,22 @@ public class Trie<S, T> implements Map<S, T>
       return values;
    }
 
+   /**
+    * 获取匹配一段路径的所有值
+    * @param sequence
+    * @return
+     */
    public Collection<T> values( S sequence )
    {
       return values( sequence, defaultMatch );
    }
 
+   /**
+    * 获取匹配一段路径的所有值
+    * @param sequence
+    * @param match
+    * @return
+     */
    public Collection<T> values( S sequence, TrieMatch match )
    {
       TrieNode<S, T> node = search( root, sequence, match );
@@ -629,11 +695,16 @@ public class Trie<S, T> implements Map<S, T>
    }
 
    /**
+    * 基于query和匹配逻辑执行搜索<br>
     * Searches in the Trie based on the sequence query and the matching logic.
-    * 
+    *
+    * @param root
+    *        查询开始的节点
     * @param query
+    *        查询串<br>
     *        The query sequence.
     * @param match
+    *        匹配逻辑<br>
     *        The matching logic.
     * @return The node that best matched the query based on the logic.
     */
@@ -723,6 +794,9 @@ public class Trie<S, T> implements Map<S, T>
       return node;
    }
 
+   /**
+    * 值集合
+    */
    private class ValueCollection extends AbstractCollection<T>
    {
 
@@ -746,6 +820,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 序列集合
+    */
    private class SequenceSet extends AbstractSet<S>
    {
 
@@ -781,6 +858,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 键值对集合
+    */
    private class EntrySet extends AbstractSet<Entry<S, T>>
    {
 
@@ -826,6 +906,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 节点集合
+    */
    private class NodeSet extends AbstractSet<TrieNode<S, T>>
    {
 
@@ -871,6 +954,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 序列迭代器
+    */
    private class SequenceIterator extends AbstractIterator<S>
    {
 
@@ -886,6 +972,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 值迭代器
+    */
    private class ValueIterator extends AbstractIterator<T>
    {
 
@@ -901,6 +990,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 键值对迭代器
+    */
    private class EntryIterator extends AbstractIterator<Entry<S, T>>
    {
 
@@ -916,6 +1008,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 节点迭代器
+    */
    private class NodeIterator extends AbstractIterator<TrieNode<S, T>>
    {
 
@@ -931,6 +1026,9 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 另一个节点迭代器
+    */
    private class NodeAllIterator extends AbstractIterator<TrieNode<S, T>>
    {
 
@@ -952,21 +1050,47 @@ public class Trie<S, T> implements Map<S, T>
       }
    }
 
+   /**
+    * 迭代器基类
+    * @param <K> 迭代器返回类型
+     */
    private abstract class AbstractIterator<K> implements Iterable<K>, Iterator<K>
    {
-
+      /**
+       * 根节点
+       */
       private final TrieNode<S, T> root;
+      /**
+       * 上一个
+       */
       private TrieNode<S, T> previous;
+      /**
+       * 下一个
+       */
       private TrieNode<S, T> current;
+      /**
+       * 深度
+       */
       private int depth;
-      private int[] indices = new int[32];
+      /**
+       * 在某个深度的第一个节点在父节点的hashmap中的id
+       */
+      private int[] indices = new int[32];   // 这个32是硬编码的，当深度大于32的时候会出问题
 
+      /**
+       * 构造迭代器
+       * @param root 根节点
+        */
       public AbstractIterator( TrieNode<S, T> root )
       {
          this.root = root;
          this.reset();
       }
 
+      /**
+       * 重置迭代器
+       * @return
+        */
       public AbstractIterator<K> reset()
       {
          depth = 0;
@@ -986,16 +1110,28 @@ public class Trie<S, T> implements Map<S, T>
          return this;
       }
 
+      /**
+       * 是否需要任何节点
+       * @return
+        */
       protected boolean isAnyNode()
       {
          return false;
       }
 
+      /**
+       * 是否有下一个
+       * @return
+        */
       public boolean hasNext()
       {
          return (current != null);
       }
 
+      /**
+       * 下一个节点
+       * @return
+        */
       public TrieNode<S, T> nextNode()
       {
          previous = current;
@@ -1003,11 +1139,18 @@ public class Trie<S, T> implements Map<S, T>
          return previous;
       }
 
+      /**
+       * 删除
+       */
       public void remove()
       {
          previous.remove( sequencer );
       }
 
+      /**
+       * 查找当前节点对应的下一个节点
+       * @return
+        */
       private TrieNode<S, T> findNext()
       {
          if (indices[0] == root.children.capacity())

@@ -19,6 +19,7 @@ package org.magnos.trie;
 import java.nio.ByteBuffer;
 
 /**
+ * 一个方便的工厂类<br>
  * A class that neatly creates Tries and will hide which Trie implementation is
  * returned.
  * 
@@ -29,6 +30,7 @@ public final class Tries
 {
 
    /**
+    * 大小写敏感的String-Trie<br>
     * Creates a Trie where the keys are case-sensitive Strings.
     * 
     * @return The reference to a newly instantiated Trie.
@@ -39,9 +41,11 @@ public final class Tries
    }
 
    /**
+    * 大小写敏感的String-Trie<br>
     * Creates a Trie where the keys are case-sensitive Strings.
     * 
     * @param defaultValue
+    *        默认值<br>
     *        The default value of the Trie is the value returned when
     *        {@link #get(Object)} or {@link #get(Object, TrieMatch)} is called
     *        and no match was found.
